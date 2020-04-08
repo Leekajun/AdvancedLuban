@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AdvancedLuban.iml" filepath="$PROJECT_DIR$/AdvancedLuban.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example/AdvancedLuban-example.iml" filepath="$PROJECT_DIR$/example/AdvancedLuban-example.iml" group="AdvancedLuban/example" />
+      <module fileurl="file://$PROJECT_DIR$/library/AdvancedLuban-library.iml" filepath="$PROJECT_DIR$/library/AdvancedLuban-library.iml" group="AdvancedLuban/library" />
       <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
+      <module fileurl="file://$PROJECT_DIR$/git-AdvancedLuban.iml" filepath="$PROJECT_DIR$/git-AdvancedLuban.iml" group="AdvancedLuban" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
     </modules>
   </component>

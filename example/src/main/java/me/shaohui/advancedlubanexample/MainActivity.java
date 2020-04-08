@@ -3,11 +3,12 @@ package me.shaohui.advancedlubanexample;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.util.ArrayList;

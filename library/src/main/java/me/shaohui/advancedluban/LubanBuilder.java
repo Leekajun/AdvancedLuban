@@ -1,6 +1,7 @@
 package me.shaohui.advancedluban;
 
 import android.graphics.Bitmap;
+
 import java.io.File;
 
 /**

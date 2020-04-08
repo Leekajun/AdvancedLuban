@@ -4,7 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -273,6 +274,13 @@ class LubanCompresser {
         int inSampleSize = 1;
 
         while (outH / inSampleSize > height || outW / inSampleSize > width) {
+
+
+            if(mLuban.gear == Luban.CUSTOM_GEAR){//针对这个做特殊处理
+                if(outH / (inSampleSize * 2) < height || outW / (inSampleSize * 2) < width){
+                    break;
+                }
+            }
             inSampleSize *= 2;
         }
 
@@ -329,7 +337,11 @@ class LubanCompresser {
 
         thbBitmap = rotatingImage(angle, thbBitmap);
 
+        if(mLuban.gear == Luban.CUSTOM_GEAR){
+            return saveImage(thumbFilePath, thbBitmap, size,width,height);
+        }
         return saveImage(thumbFilePath, thbBitmap, size);
+
     }
 
     /**
@@ -381,6 +393,80 @@ class LubanCompresser {
             options -= 6;
             bitmap.compress(mLuban.compressFormat, options, mByteArrayOutputStream);
         }
+        bitmap.recycle();
+
+        FileOutputStream fos = new FileOutputStream(filePath);
+        mByteArrayOutputStream.writeTo(fos);
+        fos.close();
+
+        return new File(filePath);
+    }
+
+    /**
+     * 保存图片到指定路径
+     * Save image with specified size
+     *
+     * @param filePath the image file save path 储存路径
+     * @param bitmap   the image what be save   目标图片
+     * @param size     the file size of image   期望大小
+     * @param maxWidth    the file width of image  目标宽度
+     * @param maxHeight   the file height of image  目标高度
+     */
+    private File saveImage(String filePath, Bitmap bitmap, long size,int maxWidth,int maxHeight) throws IOException {
+        checkNotNull(bitmap, TAG + "bitmap cannot be null");
+
+        File result = new File(filePath.substring(0, filePath.lastIndexOf("/")));
+
+        if (!result.exists() && !result.mkdirs()) {
+            return null;
+        }
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+
+        int newWidth = 0;
+        int newHeight = 0;
+
+        if(width > maxWidth && width >= height){
+            newWidth = maxWidth;
+            newHeight = (int) (height * (maxWidth / ( width* 1.0f)));
+        }else if(height > maxHeight && height > width){
+            newHeight = maxHeight;
+            newWidth = (int) (width * (maxHeight / (height * 1.0f)));
+        }else{
+            newWidth = width;
+            newHeight = height;
+        }
+
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+
+//        Log.e("saveImage:","scaleWidth:" + scaleWidth + ";scaleHeight:" + scaleHeight);
+//        Log.e("saveImage:","saveImage:" + newWidth + ";height:" + newHeight);
+//
+//        Log.e("saveImage:","width:" + width + ";height:" + height);
+//        Log.e("saveImage:","maxWidth:" + maxWidth + ";maxHeight:" + maxHeight);
+
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        Bitmap newBitmap = Bitmap.createBitmap(bitmap,0,0, width, height,matrix,true);
+
+        if (mByteArrayOutputStream == null) {
+            mByteArrayOutputStream = new ByteArrayOutputStream((int) (scaleWidth * scaleHeight));
+        } else {
+            mByteArrayOutputStream.reset();
+        }
+
+        int options = 100;
+        newBitmap.compress(mLuban.compressFormat, options, mByteArrayOutputStream);
+
+        while (mByteArrayOutputStream.size() / 1024 > size && options > 6) {
+            mByteArrayOutputStream.reset();
+            options -= 6;
+            newBitmap.compress(mLuban.compressFormat, options, mByteArrayOutputStream);
+        }
+        newBitmap.recycle();
         bitmap.recycle();
 
         FileOutputStream fos = new FileOutputStream(filePath);
